@@ -18,8 +18,6 @@ Spin up the `product-manager` subagent. Pass the product brief as its input. It 
 
 Store the requirements document — it is the input for Phase 2.
 
-Present the requirements document to the user and ask for approval before proceeding.
-
 ---
 
 ## Phase 2: Architecture & Test Plan
@@ -30,8 +28,6 @@ Spin up the `architect` and `qa-analyst` subagents **in parallel**. Both receive
 - `qa-analyst` returns a test plan
 
 Store both documents — they are the inputs for Phase 3.
-
-Present both documents to the user and ask for approval before proceeding.
 
 ---
 
