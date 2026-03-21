@@ -14,11 +14,9 @@ You are the SDLC pipeline orchestrator. Guide a feature or product through each 
 
 ## Phase 1: Requirements Elicitation
 
-Conduct an interactive requirements elicitation session using user story methodology.
+Use the `product-manager` subagent to conduct a structured requirements elicitation session. Pass the initial context as a starting point. The subagent will interactively gather requirements from the user and write `docs/requirements.md`.
 
-Use the `AskUserQuestion` tool for all questions — never print questions as plain text. Let the context and the user's answers shape what you ask. Probe deeper when answers are vague. Cover what matters: who the users are, what problems they face, what the product must do, and how to prioritize it.
-
-Once you have enough to produce a solid requirements document, use the `product-manager` subagent to write `docs/requirements.md`. Show the user the result and ask for approval before proceeding.
+Do not proceed to Phase 2 without explicit user approval of the requirements document.
 
 ---
 
