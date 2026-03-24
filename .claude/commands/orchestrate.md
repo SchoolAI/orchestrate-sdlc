@@ -74,6 +74,42 @@ For each phase:
 
 After all phases are complete, report a summary to the user: tasks completed, files changed, any notes from engineer agents.
 
-## Phase 5: Verification [NOT YET IMPLEMENTED]
+## Phase 5: Verification & Fix Loop
+
+This phase loops until all verification checks pass or the iteration limit is reached.
+
+**Maximum iterations: 3.** If verification is still failing after 3 fix cycles, stop and surface all remaining issues to the user — do not continue looping.
+
+### Step 1: Verify
+
+Create `{docs_folder}/verification/` if it does not exist.
+
+Spin up all three verification agents **in parallel**, passing each the docs folder path (`{docs_folder}`):
+
+- `qa-verifier` — runs the test suite and checks test plan coverage, writes `{docs_folder}/verification/qa-report.md`
+- `security-reviewer` — reviews changed code for vulnerabilities, writes `{docs_folder}/verification/security-report.md`
+- `accessibility-reviewer` — reviews UI code for a11y issues, writes `{docs_folder}/verification/accessibility-report.md`
+
+Wait for all three to complete. Read each report and check the **Result** line.
+
+- If all reports are **PASS**: exit the loop and proceed to Phase 6.
+- If any report is **FAIL** and the iteration limit has not been reached: proceed to Step 2.
+- If any report is **FAIL** and the iteration limit has been reached: stop, surface all remaining failures to the user, and halt the pipeline.
+
+### Step 2: Plan Fixes
+
+Spin up the `task-planner` subagent in fix mode. Pass:
+- The docs folder path (`{docs_folder}`)
+- The failed verification reports
+
+The task planner will read the findings, create fix task files, and append new phases to `{docs_folder}/task-index.md`.
+
+### Step 3: Implement Fixes
+
+Execute the newly appended phases from `task-index.md` using the same parallel engineer agent logic as Phase 4 (worktree isolation, one engineer per task, merge after each phase).
+
+Once all fix tasks are complete, return to Step 1 for the next verification run.
+
+---
 
 ## Phase 6: Review & Submit [NOT YET IMPLEMENTED]
