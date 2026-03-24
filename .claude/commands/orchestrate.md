@@ -60,16 +60,19 @@ The agent will read all three documents, decompose the work into executable task
 
 Read `{docs_folder}/task-index.md` to get the execution phases and task list.
 
-Execute phases in order. **Do not start a phase until all tasks in the previous phase are complete.**
+Execute phases in order. **Do not start a phase until all tasks in the previous phase are complete and merged.**
 
 For each phase:
-1. Spin up one `engineer` subagent per task in the phase, **all in parallel**
+1. Spin up one `engineer` subagent per task in the phase, **all in parallel**, each with `isolation: "worktree"` so agents work in isolated git branches and cannot conflict with each other
 2. Pass each agent the path to its task file: `{docs_folder}/tasks/task-NNN.md`
 3. Wait for all agents in the phase to respond
 4. Check each response:
    - If any agent reports **blocked**: stop the pipeline, surface the blocker to the user
-   - If all agents report **complete**: proceed to the next phase
-5. After all phases complete, report a summary of all tasks completed to the user
+   - If all agents report **complete**: proceed to merge
+5. **Merge phase**: for each worktree branch returned by a completed agent, merge it into the current branch using the Bash tool (`git merge {branch}`). Merge branches one at a time. If a merge conflict occurs: surface it to the user and stop — do not attempt to auto-resolve.
+6. After all branches for the phase are cleanly merged, proceed to the next phase
+
+After all phases are complete, report a summary to the user: tasks completed, files changed, any notes from engineer agents.
 
 ## Phase 5: Verification [NOT YET IMPLEMENTED]
 
