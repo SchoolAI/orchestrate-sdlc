@@ -56,9 +56,20 @@ The agent will read all three documents, decompose the work into executable task
 
 ---
 
-## Phase 4: Implementation [NOT YET IMPLEMENTED]
+## Phase 4: Implementation
 
-Read `{docs_folder}/task-index.md` to determine execution phases. For each phase, spin up one engineer agent per task in parallel. Each agent receives its task file path.
+Read `{docs_folder}/task-index.md` to get the execution phases and task list.
+
+Execute phases in order. **Do not start a phase until all tasks in the previous phase are complete.**
+
+For each phase:
+1. Spin up one `engineer` subagent per task in the phase, **all in parallel**
+2. Pass each agent the path to its task file: `{docs_folder}/tasks/task-NNN.md`
+3. Wait for all agents in the phase to respond
+4. Check each response:
+   - If any agent reports **blocked**: stop the pipeline, surface the blocker to the user
+   - If all agents report **complete**: proceed to the next phase
+5. After all phases complete, report a summary of all tasks completed to the user
 
 ## Phase 5: Verification [NOT YET IMPLEMENTED]
 
