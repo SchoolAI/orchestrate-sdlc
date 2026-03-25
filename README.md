@@ -46,7 +46,7 @@ Phase 1  Requirements      Product brief → user stories, personas, acceptance 
 Phase 2  Architecture      Requirements + codebase → implementation plan + test cases (parallel)
 Phase 3  Task Planning     All docs → ordered, executable task files with dependency graph
 Phase 4  Implementation    Parallel engineer agents per phase, each in an isolated git worktree
-Phase 5  Verification      QA + security + accessibility checks in parallel, auto-fix loop (up to 3x)
+Phase 5  Verification      QA + security + accessibility + browser testing in parallel, auto-fix loop (up to 3x)
 Phase 6  Handoff           Summary of everything built, decisions made, and suggested next steps
 ```
 
@@ -62,6 +62,7 @@ Phase 6  Handoff           Summary of everything built, decisions made, and sugg
 | `qa-verifier` | Runs the test suite and checks every test case from the plan is implemented |
 | `security-reviewer` | Reviews changed code for OWASP Top 10 and common vulnerabilities |
 | `accessibility-reviewer` | Reviews UI code for WCAG compliance, ARIA usage, and keyboard navigation |
+| `manual-tester` | Starts the app and walks through user stories in a real browser *(optional, requires Playwright MCP)* |
 
 ### Output
 
@@ -81,6 +82,7 @@ docs/{feature-slug}/
     qa-report.md        — test suite results and coverage
     security-report.md  — security findings by severity
     accessibility-report.md — a11y findings by severity
+    manual-test-report.md  — browser-based exploratory test results (if Playwright MCP enabled)
 ```
 
 ## Requirements
@@ -88,3 +90,13 @@ docs/{feature-slug}/
 - [Claude Code](https://claude.ai/code) installed and authenticated
 - Node.js 18+
 - A git repository (required for worktree isolation during implementation)
+
+## Optional: Browser Testing
+
+The `manual-tester` agent walks through user stories in a real browser. It requires the Playwright MCP server. To enable it:
+
+```bash
+claude mcp add --transport stdio playwright -- npx -y @playwright/mcp
+```
+
+The pipeline works without this — the `manual-tester` is skipped if the MCP server is not configured. All other verification (QA, security, accessibility) runs regardless.
