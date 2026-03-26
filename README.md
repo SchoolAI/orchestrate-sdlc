@@ -52,17 +52,17 @@ Phase 6  Handoff           Summary of everything built, decisions made, and sugg
 
 ### Agents
 
-| Agent | Role |
-|-------|------|
-| `product-manager` | Transforms a brief into a structured requirements doc with user stories and acceptance criteria |
-| `architect` | Reads the codebase and requirements, produces a concrete implementation plan |
-| `qa-analyst` | Maps every user story to executable test cases covering happy paths, edge cases, and failures |
-| `task-planner` | Decomposes planning docs into ordered, parallel-executable vertical slice tasks |
-| `engineer` | Implements a single task — code, tests, verification — in an isolated git worktree |
-| `qa-verifier` | Runs the test suite and checks every test case from the plan is implemented |
-| `security-reviewer` | Reviews changed code for OWASP Top 10 and common vulnerabilities |
-| `accessibility-reviewer` | Reviews UI code for WCAG compliance, ARIA usage, and keyboard navigation |
-| `manual-tester` | Starts the app and walks through user stories in a real browser *(optional, requires Claude in Chrome extension)* |
+| Agent                    | Role                                                                                                              |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `product-manager`        | Transforms a brief into a structured requirements doc with user stories and acceptance criteria                   |
+| `architect`              | Reads the codebase and requirements, produces a concrete implementation plan                                      |
+| `qa-analyst`             | Maps every user story to executable test cases covering happy paths, edge cases, and failures                     |
+| `task-planner`           | Decomposes planning docs into ordered, parallel-executable vertical slice tasks                                   |
+| `engineer`               | Implements a single task — code, tests, verification — in an isolated git worktree                                |
+| `qa-verifier`            | Runs the test suite and checks every test case from the plan is implemented                                       |
+| `security-reviewer`      | Reviews changed code for OWASP Top 10 and common vulnerabilities                                                  |
+| `accessibility-reviewer` | Reviews UI code for WCAG compliance, ARIA usage, and keyboard navigation                                          |
+| `manual-tester`          | Starts the app and walks through user stories in a real browser _(optional, requires Claude in Chrome extension)_ |
 
 ### Output
 
@@ -90,6 +90,8 @@ docs/{feature-slug}/
 - [Claude Code](https://claude.ai/code) installed and authenticated
 - Node.js 18+
 - A git repository with a remote configured (required for worktree isolation during implementation — run `git remote add origin <url>` before using `/orchestrate`)
+  - There is a bug in claude code where worktrees only work if you have a remote set, it is annoying and until that is fixed this is required for parallel engineer execution.
+    The orchestrator will still work if this is not set, it will notice that worktrees are not working and just run them sequentially.
 
 ## Optional: Browser Testing
 
