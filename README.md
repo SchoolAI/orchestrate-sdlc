@@ -1,29 +1,44 @@
 # cc-sdlc
 
-A Claude Code SDLC pipeline that takes a product brief and fully implements it — requirements, architecture, task planning, implementation, verification, and a handoff summary — with no manual intervention.
+A Claude Code / Cursor SDLC pipeline that takes a product brief and fully implements it — requirements, architecture, task planning, implementation, verification, and a handoff summary — with no manual intervention.
 
 ## Install
+
+### Claude Code
 
 ```bash
 npx cc-sdlc
 ```
 
-This copies the `/orchestrate` command and all agents into `~/.claude`, making them available globally in any repository. Use `--force` to overwrite existing files.
+Installs the `/orchestrate` skill and all agents into `~/.claude`.
 
 ```bash
-npx cc-sdlc --force
+npx cc-sdlc --force                          # overwrite existing files
+npx cc-sdlc --claude-dir /path/to/.claude    # custom directory
 ```
 
-If you've configured Claude Code to use a custom directory instead of `~/.claude`, pass it with `--claude-dir`:
+### Cursor
 
 ```bash
-npx cc-sdlc --claude-dir /path/to/your/.claude
-npx cc-sdlc --claude-dir /path/to/your/.claude --force
+npx cc-sdlc --cursor
+```
+
+Installs the `/orchestrate` skill and all agents into `~/.cursor`.
+
+```bash
+npx cc-sdlc --cursor --force                         # overwrite existing files
+npx cc-sdlc --cursor-dir /path/to/.cursor            # custom directory
+```
+
+### Both at once
+
+```bash
+npx cc-sdlc --claude --cursor
 ```
 
 ## Usage
 
-Open Claude Code in any repository and run:
+Open Claude Code or Cursor in any repository and run:
 
 ```
 /orchestrate <your product brief>
@@ -63,6 +78,7 @@ Phase 6  Handoff           Summary of everything built, decisions made, and sugg
 | `security-reviewer`      | Reviews changed code for OWASP Top 10 and common vulnerabilities                                                  |
 | `accessibility-reviewer` | Reviews UI code for WCAG compliance, ARIA usage, and keyboard navigation                                          |
 | `manual-tester`          | Starts the app and walks through user stories in a real browser _(optional, requires Claude in Chrome extension)_ |
+| `merge-resolver`         | Resolves git merge conflicts by understanding the intent of both conflicting tasks                                 |
 
 ### Output
 
@@ -82,16 +98,15 @@ docs/{feature-slug}/
     qa-report.md        — test suite results and coverage
     security-report.md  — security findings by severity
     accessibility-report.md — a11y findings by severity
-    manual-test-report.md  — browser-based exploratory test results (if Playwright MCP enabled)
+    manual-test-report.md  — browser-based exploratory test results (if Chrome extension enabled)
 ```
 
 ## Requirements
 
-- [Claude Code](https://claude.ai/code) installed and authenticated
+- [Claude Code](https://claude.ai/code) or [Cursor](https://cursor.com) installed and authenticated
 - Node.js 18+
 - A git repository with a remote configured (required for worktree isolation during implementation — run `git remote add origin <url>` before using `/orchestrate`)
-  - There is a bug in claude code where worktrees only work if you have a remote set, it is annoying and until that is fixed this is required for parallel engineer execution.
-    The orchestrator will still work if this is not set, it will notice that worktrees are not working and just run them sequentially.
+  - There is a bug in Claude Code where worktrees only work if you have a remote set. Until that is fixed, this is required for parallel engineer execution. The orchestrator will still work without it — it will detect that worktrees are unavailable and run engineers sequentially.
 
 ## Optional: Browser Testing
 
@@ -101,3 +116,11 @@ The `manual-tester` agent walks through user stories in a real browser using Cla
 2. Launch Claude Code with Chrome integration enabled: `claude --chrome`
 
 The pipeline works without this — the `manual-tester` is skipped if the extension is not available. All other verification (QA, security, accessibility) runs regardless.
+
+## Contributing
+
+Source files live in `src/` — edit agents in `src/agents/` and skills in `src/skills/`. Each source file uses combined frontmatter with `claude:` and `cursor:` subsections for tool-specific fields. After editing, run the build to regenerate the `.claude/` and `.cursor/` output directories:
+
+```bash
+npm run build
+```

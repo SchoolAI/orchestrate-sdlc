@@ -1,7 +1,11 @@
 ---
+name: orchestrate
 description: Orchestrate the full SDLC pipeline from a product brief
-argument-hint: <product brief>
-disable-model-invocation: true
+claude:
+  argument-hint: <product brief>
+  disable-model-invocation: true
+cursor:
+  disable-model-invocation: true
 ---
 
 # SDLC Pipeline

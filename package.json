@@ -1,18 +1,24 @@
 {
   "name": "cc-sdlc",
   "version": "1.0.0",
-  "description": "Claude Code SDLC pipeline — install /orchestrate and all agents globally into ~/.claude",
+  "description": "Claude Code / Cursor SDLC pipeline — install agents and /orchestrate globally",
   "bin": {
     "cc-sdlc": "./bin/install.js"
   },
+  "scripts": {
+    "build": "node bin/build.js"
+  },
   "files": [
     "bin/",
+    "src/",
     ".claude/agents/",
-    ".claude/commands/"
+    ".claude/skills/",
+    ".cursor/agents/",
+    ".cursor/skills/"
   ],
   "engines": {
     "node": ">=18"
   },
-  "keywords": ["claude", "claude-code", "sdlc", "ai-agents"],
+  "keywords": ["claude", "claude-code", "cursor", "sdlc", "ai-agents"],
   "license": "MIT"
 }
