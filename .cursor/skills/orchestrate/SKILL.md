@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Product brief: $ARGUMENTS
 
-You are the SDLC pipeline orchestrator. You hold all artifacts, coordinate agents, and drive the pipeline from brief to executable task list. Each phase feeds directly into the next with no manual intervention.
+You are the SDLC pipeline orchestrator. You hold all artifacts, coordinate agents, and drive the pipeline from brief to shipped code. Each phase feeds directly into the next with no manual intervention.
 
 ---
 
@@ -18,12 +18,11 @@ Derive a short kebab-case feature slug from the product brief (e.g. "url-shorten
 
 ```
 docs/{feature-slug}/
-docs/{feature-slug}/tasks/
+docs/{feature-slug}/phases/
+docs/{feature-slug}/verification/
 ```
 
 Use the Bash tool to create these directories. All agents will read from and write to this folder. Refer to the folder path as `{docs_folder}` throughout.
-
-Before proceeding, verify the repository has a remote configured (`git remote -v`). If no remote is found, stop and tell the user to add one — worktree isolation in Phase 4 requires it.
 
 ---
 
@@ -47,85 +46,94 @@ The `qa-analyst` will read `requirements.md` and write `{docs_folder}/test-plan.
 
 ---
 
-## Phase 3: Task Planning
+## Phase 3: Planning
 
 Spin up the `task-planner` subagent. Pass:
 - The docs folder path (`{docs_folder}`)
 
-The agent will read all three documents, decompose the work into executable tasks, and write:
-- `{docs_folder}/tasks/task-NNN.md` — one file per task
-- `{docs_folder}/task-index.md` — execution phases and dependency graph
+The agent will read all three documents and write:
+- `{docs_folder}/phases/phase-N.md` — one file per implementation phase
+- `{docs_folder}/task-index.md` — ordered phase list with dependency summary
 
 ---
 
 ## Phase 4: Implementation
 
-Read `{docs_folder}/task-index.md` to get the execution phases and task list.
+Read `{docs_folder}/task-index.md` to get the ordered list of phases.
 
-Execute phases in order. **Do not start a phase until all tasks in the previous phase are complete and merged.**
+Execute phases **one at a time in order**. For each phase:
 
-For each phase:
-1. Spin up one `engineer` subagent per task in the phase, **all in parallel**, each with `isolation: "worktree"` so agents work in isolated git branches and cannot conflict with each other
-2. Pass each agent the path to its task file: `{docs_folder}/tasks/task-NNN.md`
-3. Wait for all agents in the phase to respond
-4. Check each response:
-   - If any agent reports **blocked**: stop the pipeline, surface the blocker to the user
-   - If all agents report **complete**: proceed to merge
-5. **Merge phase**: merge each worktree branch one at a time with `git merge {branch}`.
-   - On success: clean up immediately (`git worktree remove --force {worktree_path} && git branch -d {branch}`), then continue to the next branch.
-   - On conflict: identify the conflicting files (`git diff --name-only --diff-filter=U`), then spin up the `merge-resolver` subagent with:
-     - The conflicting files and their conflict markers
-     - The task file for the branch being merged
-     - The task file for the branch it conflicted with (the previously merged task, or HEAD if it's the first merge)
-   - If the resolver reports **resolved**: clean up the worktree and branch, continue merging remaining branches.
-   - If the resolver reports **blocked**: surface the irresolvable conflict to the user and halt the pipeline.
-6. After all branches for the phase are cleanly merged and cleaned up, proceed to the next phase
+### Step 1: Implement
 
-After all phases are complete, report a summary to the user: tasks completed, files changed, any notes from engineer agents.
+Spin up one `engineer` subagent. Pass:
+- The path to the phase file: `{docs_folder}/phases/phase-N.md`
+- The docs folder path (`{docs_folder}`)
 
-## Phase 5: Verification & Fix Loop
+Wait for the engineer to respond.
 
-This phase loops until all verification checks pass or the iteration limit is reached.
+- If the engineer reports **blocked**: stop the pipeline and surface the blocker to the user.
+- If the engineer reports **complete**: proceed to Step 2.
 
-**Maximum iterations: 3.** If verification is still failing after 3 fix cycles, stop and surface all remaining issues to the user — do not continue looping.
+### Step 2: Phase verification
+
+Spin up `qa-verifier`. Pass:
+- The docs folder path (`{docs_folder}`)
+
+Wait for the report.
+
+- If **PASS**: proceed to the next phase.
+- If **FAIL**: enter the phase fix loop (max 2 iterations):
+  1. Spin up `task-planner` in fix mode with the failed `qa-report.md`. It will write a fix phase and append it to `task-index.md`.
+  2. Spin up `engineer` with the new fix phase file.
+  3. Spin up `qa-verifier` again.
+  4. If **PASS**: continue to the next phase.
+  5. If still **FAIL** after 2 fix attempts: stop, surface the failures to the user, and halt the pipeline.
+
+After all phases pass their verification, proceed to Phase 5.
+
+---
+
+## Phase 5: Final Verification
+
+Run a comprehensive verification pass on the completed implementation.
+
+**Maximum fix iterations: 3.** If verification is still failing after 3 fix cycles, stop and surface all remaining issues to the user.
 
 ### Step 1: Verify
 
-Create `{docs_folder}/verification/` if it does not exist.
+Spin up the following agents **in parallel**, passing each the docs folder path (`{docs_folder}`):
 
-Spin up the verification agents **in parallel**, passing each the docs folder path (`{docs_folder}`):
+- `qa-verifier` — runs the full test suite and checks test plan coverage, writes `{docs_folder}/verification/qa-report.md`
+- `security-reviewer` — reviews the implementation for vulnerabilities, writes `{docs_folder}/verification/security-report.md`
+- `manual-tester` — starts the app and walks through user stories in a real browser, writes `{docs_folder}/verification/manual-test-report.md`
 
-- `qa-verifier` — runs the test suite and checks test plan coverage, writes `{docs_folder}/verification/qa-report.md`
-- `security-reviewer` — reviews changed code for vulnerabilities, writes `{docs_folder}/verification/security-report.md`
-- `manual-tester` — starts the app and walks through user stories in a real browser using built-in integration, writes `{docs_folder}/verification/manual-test-report.md`
+Read each report and check the **Result** line.
 
-Wait for all agents to complete. Read each report and check the **Result** line.
+- If all **PASS**: proceed to Phase 6.
+- If any **FAIL** and iterations remain: proceed to Step 2.
+- If any **FAIL** and no iterations remain: stop and surface all failures to the user.
 
-- If all reports are **PASS**: exit the loop and proceed to Phase 6.
-- If any report is **FAIL** and the iteration limit has not been reached: proceed to Step 2.
-- If any report is **FAIL** and the iteration limit has been reached: stop, surface all remaining failures to the user, and halt the pipeline.
+### Step 2: Plan fixes
 
-### Step 2: Plan Fixes
-
-Spin up the `task-planner` subagent in fix mode. Pass:
+Spin up `task-planner` in fix mode. Pass:
 - The docs folder path (`{docs_folder}`)
 - The failed verification reports
 
-The task planner will read the findings, create fix task files, and append new phases to `{docs_folder}/task-index.md`.
+The task planner will create fix phases and append them to `task-index.md`.
 
-### Step 3: Implement Fixes
+### Step 3: Implement fixes
 
-Execute the newly appended phases from `task-index.md` using the same parallel engineer agent logic as Phase 4 (worktree isolation, one engineer per task, merge after each phase).
+For each new fix phase (in order):
+1. Spin up `engineer` with the fix phase file.
+2. Spin up `qa-verifier` to confirm no regressions before continuing.
 
-Once all fix tasks are complete, return to Step 1 for the next verification run.
+Once all fix phases are complete, return to Step 1.
 
 ---
 
 ## Phase 6: Summary & Handoff
 
-Read all artifacts produced during the pipeline and present the user with a single comprehensive summary. The goal is to give them everything they need to understand what changed and make an informed decision about next steps — without having to read any individual doc themselves.
-
-Present the summary directly in the conversation using this structure:
+Read all artifacts produced during the pipeline and present a single comprehensive summary directly in the conversation.
 
 ---
 
@@ -138,15 +146,15 @@ A plain-language description of the feature as implemented, tied back to the ori
 The key technical decisions made by the architect that will have lasting impact on the codebase — new patterns introduced, dependencies added, schema changes, anything that future engineers will need to understand.
 
 **### Files Changed**
-A grouped summary of all files created or modified across all tasks. Group by area (e.g. data layer, API, UI, tests) rather than listing every file flat.
+A grouped summary of all files created or modified across all phases. Group by area (e.g. data layer, API, UI, tests) rather than listing every file flat.
 
 **### Verification Results**
 - QA: [pass/fail summary, test count, coverage]
 - Security: [pass/fail, any Medium findings worth knowing even if not blocking]
-- Accessibility: [pass/fail, any Medium findings worth knowing even if not blocking]
+- Manual: [pass/fail, any issues worth noting]
 
 **### Decisions & Assumptions**
-Notable assumptions agents made, open questions that were deferred, or trade-offs that were resolved during implementation. These are things the user may want to revisit.
+Notable assumptions agents made, open questions that were deferred, or trade-offs that were resolved during implementation.
 
 **### Suggested Next Steps**
-What the user might reasonably do from here — open a PR, run the app locally, review a specific file, address deferred open questions, etc. Offer options, not instructions.
+What the user might reasonably do from here — open a PR, run the app locally, review a specific file, address deferred open questions, etc.

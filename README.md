@@ -59,9 +59,9 @@ The pipeline runs fully automated from there.
 ```
 Phase 1  Requirements      Product brief → user stories, personas, acceptance criteria
 Phase 2  Architecture      Requirements + codebase → implementation plan + test cases (parallel)
-Phase 3  Task Planning     All docs → ordered, executable task files with dependency graph
-Phase 4  Implementation    Parallel engineer agents per phase, each in an isolated git worktree
-Phase 5  Verification      QA + security + accessibility + browser testing in parallel, auto-fix loop (up to 3x)
+Phase 3  Planning          All docs → ordered phase files with dependency summary
+Phase 4  Implementation    One engineer per phase, sequential; qa-verifier runs after each phase with auto-fix loop
+Phase 5  Verification      Full pass: QA + security + browser testing in parallel, auto-fix loop (up to 3x)
 Phase 6  Handoff           Summary of everything built, decisions made, and suggested next steps
 ```
 
@@ -72,8 +72,8 @@ Phase 6  Handoff           Summary of everything built, decisions made, and sugg
 | `product-manager`        | Transforms a brief into a structured requirements doc with user stories and acceptance criteria                   |
 | `architect`              | Reads the codebase and requirements, produces a concrete implementation plan                                      |
 | `qa-analyst`             | Maps every user story to executable test cases covering happy paths, edge cases, and failures                     |
-| `task-planner`           | Decomposes planning docs into ordered, parallel-executable vertical slice tasks                                   |
-| `engineer`               | Implements a single task — code, tests, verification — in an isolated git worktree                                |
+| `task-planner`           | Decomposes planning docs into an ordered sequence of cohesive implementation phases                               |
+| `engineer`               | Implements a complete phase — all work items, code, and tests                                                     |
 | `qa-verifier`            | Runs the test suite and checks every test case from the plan is implemented                                       |
 | `security-reviewer`      | Reviews changed code for OWASP Top 10 and common vulnerabilities                                                  |
 | `manual-tester`          | Starts the app and walks through user stories in a real browser _(optional, requires Claude in Chrome extension)_ |
@@ -88,15 +88,14 @@ docs/{feature-slug}/
   requirements.md       — user stories and acceptance criteria
   architecture.md       — implementation plan and component design
   test-plan.md          — full test case specification
-  task-index.md         — execution phases and dependency graph
-  tasks/
-    task-001.md         — individual task specs for engineer agents
-    task-002.md
+  task-index.md         — ordered phase list with dependency summary
+  phases/
+    phase-1.md          — cohesive phase specs for engineer agents
+    phase-2.md
     ...
   verification/
     qa-report.md        — test suite results and coverage
     security-report.md  — security findings by severity
-    accessibility-report.md — a11y findings by severity
     manual-test-report.md  — browser-based exploratory test results (if Chrome extension enabled)
 ```
 
