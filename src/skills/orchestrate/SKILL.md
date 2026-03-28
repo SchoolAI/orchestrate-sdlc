@@ -80,18 +80,19 @@ Wait for the engineer to respond.
 
 ### Step 2: Phase verification
 
-Spin up `qa-verifier`. Pass:
+Spin up `qa-verifier` and `code-reviewer` **in parallel**. Pass each:
 - The docs folder path (`{docs_folder}`)
+- The current phase file path (for `code-reviewer`)
 
-Wait for the report.
+Wait for both reports.
 
-- If **PASS**: proceed to the next phase.
-- If **FAIL**: enter the phase fix loop (max 2 iterations):
-  1. Spin up `task-planner` in fix mode with the failed `qa-report.md`. It will write a fix phase and append it to `task-index.md`.
+- If both **PASS**: proceed to the next phase.
+- If either **FAIL**: enter the phase fix loop (max 2 iterations):
+  1. Spin up `task-planner` in fix mode with the failed reports. It will write a fix phase and append it to `task-index.md`.
   2. Spin up `engineer` with the new fix phase file.
-  3. Spin up `qa-verifier` again.
-  4. If **PASS**: continue to the next phase.
-  5. If still **FAIL** after 2 fix attempts: stop, surface the failures to the user, and halt the pipeline.
+  3. Spin up `qa-verifier` and `code-reviewer` in parallel again.
+  4. If both **PASS**: continue to the next phase.
+  5. If still failing after 2 fix attempts: stop, surface the failures to the user, and halt the pipeline.
 
 After all phases pass their verification, proceed to Phase 5.
 

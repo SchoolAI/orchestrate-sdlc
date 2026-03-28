@@ -60,7 +60,7 @@ The pipeline runs fully automated from there.
 Phase 1  Requirements      Product brief → user stories, personas, acceptance criteria
 Phase 2  Architecture      Requirements + codebase → implementation plan + test cases (parallel)
 Phase 3  Planning          All docs → ordered phase files with dependency summary
-Phase 4  Implementation    One engineer per phase, sequential; qa-verifier runs after each phase with auto-fix loop
+Phase 4  Implementation    One engineer per phase, sequential; qa-verifier + code-reviewer run after each phase with auto-fix loop
 Phase 5  Verification      Full pass: QA + security + browser testing in parallel, auto-fix loop (up to 3x)
 Phase 6  Handoff           Summary of everything built, decisions made, and suggested next steps
 ```
@@ -74,6 +74,7 @@ Phase 6  Handoff           Summary of everything built, decisions made, and sugg
 | `qa-analyst`             | Maps every user story to executable test cases covering happy paths, edge cases, and failures                     |
 | `task-planner`           | Decomposes planning docs into an ordered sequence of cohesive implementation phases                               |
 | `engineer`               | Implements a complete phase — all work items, code, and tests                                                     |
+| `code-reviewer`          | Reviews code changed in the current phase for quality, consistency, and correctness                               |
 | `qa-verifier`            | Runs the test suite and checks every test case from the plan is implemented                                       |
 | `security-reviewer`      | Reviews changed code for OWASP Top 10 and common vulnerabilities                                                  |
 | `manual-tester`          | Starts the app and walks through user stories in a real browser _(optional, requires Claude in Chrome extension)_ |
@@ -94,8 +95,9 @@ docs/{feature-slug}/
     phase-2.md
     ...
   verification/
-    qa-report.md        — test suite results and coverage
-    security-report.md  — security findings by severity
+    code-review-phase-N.md — per-phase code review findings
+    qa-report.md           — test suite results and coverage
+    security-report.md     — security findings by severity
     manual-test-report.md  — browser-based exploratory test results (if Chrome extension enabled)
 ```
 

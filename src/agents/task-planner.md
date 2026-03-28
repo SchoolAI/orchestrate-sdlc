@@ -35,7 +35,7 @@ Triggered when given a docs folder with `requirements.md`, `architecture.md`, an
 
 Triggered when given verification reports from a failed verification run. Your job is to create one or more fix phases and append them to the existing phase index.
 
-1. **Read the verification reports** provided (read whichever exist and have failures)
+1. **Read the verification reports** provided (read whichever exist and have failures — may include `qa-report.md`, `code-review-phase-N.md`, `security-report.md`, or `manual-test-report.md`)
 2. **Read the existing `task-index.md`** to understand what has already been done and what the next phase number is
 3. **Group the findings** into cohesive fix phases — related fixes that touch the same area should be in the same phase. Fixes with hard dependencies (e.g. a schema fix before an endpoint fix) must be sequenced into separate phases.
 4. **Write fix phase files** continuing the existing phase numbering
