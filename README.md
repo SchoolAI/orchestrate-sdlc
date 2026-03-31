@@ -60,7 +60,7 @@ The pipeline runs fully automated from there.
 Phase 1  Requirements      Product brief → user stories, personas, acceptance criteria
 Phase 2  Architecture      Requirements + codebase → implementation plan + test cases (parallel)
 Phase 3  Planning          All docs → ordered phase files with dependency summary
-Phase 4  Implementation    One engineer per phase, sequential; qa-verifier + code-reviewer run after each phase with auto-fix loop
+Phase 4  Implementation    One engineer per phase, sequential; engineer validates its own work before reporting complete
 Phase 5  Verification      Full pass: QA + security + browser testing in parallel, auto-fix loop (up to 3x)
 Phase 6  Handoff           Summary of everything built, decisions made, and suggested next steps
 ```
