@@ -2,6 +2,12 @@
 
 A Claude Code / Cursor SDLC pipeline that takes a product brief and fully implements it — requirements, architecture, task planning, implementation, verification, and a handoff summary — with no manual intervention.
 
+## Prerequisites
+
+- **Node.js 18+**
+- **[Claude Code](https://claude.ai/code)** or **[Cursor](https://cursor.com)** installed and authenticated
+- A **git repository** to run the pipeline in
+
 ## Install
 
 ### Claude Code
@@ -10,7 +16,7 @@ A Claude Code / Cursor SDLC pipeline that takes a product brief and fully implem
 npx cc-sdlc
 ```
 
-Installs the `/orchestrate` skill and all agents into `~/.claude`.
+Installs skills (`/orchestrate`, `/generate-brief`) and all agents into `~/.claude`.
 
 ```bash
 npx cc-sdlc --force                          # overwrite existing files
@@ -23,7 +29,7 @@ npx cc-sdlc --claude-dir /path/to/.claude    # custom directory
 npx cc-sdlc --cursor
 ```
 
-Installs the `/orchestrate` skill and all agents into `~/.cursor`.
+Installs skills and all agents into `~/.cursor`.
 
 ```bash
 npx cc-sdlc --cursor --force                         # overwrite existing files
@@ -54,6 +60,14 @@ No user accounts required.
 
 The pipeline runs fully automated from there.
 
+### Generating a brief interactively
+
+If you're not sure what to put in the brief, use `/generate-brief` first. It walks you through a short Q&A and produces a structured brief you can then pass to `/orchestrate`.
+
+```
+/generate-brief task management app
+```
+
 ## What it does
 
 ```
@@ -67,18 +81,18 @@ Phase 6  Handoff           Summary of everything built, decisions made, and sugg
 
 ### Agents
 
-| Agent                    | Role                                                                                                              |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| `product-manager`        | Transforms a brief into a structured requirements doc with user stories and acceptance criteria                   |
-| `architect`              | Reads the codebase and requirements, produces a concrete implementation plan                                      |
-| `qa-analyst`             | Maps every user story to executable test cases covering happy paths, edge cases, and failures                     |
-| `task-planner`           | Decomposes planning docs into an ordered sequence of cohesive implementation phases                               |
-| `engineer`               | Implements a complete phase — all work items, code, and tests                                                     |
-| `code-reviewer`          | Reviews code changed in the current phase for quality, consistency, and correctness                               |
-| `qa-verifier`            | Runs the test suite and checks every test case from the plan is implemented                                       |
-| `security-reviewer`      | Reviews changed code for OWASP Top 10 and common vulnerabilities                                                  |
-| `manual-tester`          | Starts the app and walks through user stories in a real browser _(optional, requires Claude in Chrome extension)_ |
-| `merge-resolver`         | Resolves git merge conflicts by understanding the intent of both conflicting tasks                                 |
+| Agent               | Role                                                                                                              |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `product-manager`   | Transforms a brief into a structured requirements doc with user stories and acceptance criteria                   |
+| `architect`         | Reads the codebase and requirements, produces a concrete implementation plan                                      |
+| `qa-analyst`        | Maps every user story to executable test cases covering happy paths, edge cases, and failures                     |
+| `task-planner`      | Decomposes planning docs into an ordered sequence of cohesive implementation phases                               |
+| `engineer`          | Implements a complete phase — all work items, code, and tests — and verifies everything passes before reporting done |
+| `code-reviewer`     | Reviews code for quality, consistency, and correctness against existing codebase patterns                         |
+| `qa-verifier`       | Runs the test suite and checks every test case from the plan is implemented                                       |
+| `security-reviewer` | Reviews changed code for OWASP Top 10 and common vulnerabilities                                                  |
+| `manual-tester`     | Starts the app and walks through user stories in a real browser _(optional, requires Claude in Chrome extension)_ |
+| `merge-resolver`    | Resolves git merge conflicts by understanding the intent of both conflicting tasks                                 |
 
 ### Output
 
@@ -95,17 +109,10 @@ docs/{feature-slug}/
     phase-2.md
     ...
   verification/
-    code-review-phase-N.md — per-phase code review findings
     qa-report.md           — test suite results and coverage
     security-report.md     — security findings by severity
     manual-test-report.md  — browser-based exploratory test results (if Chrome extension enabled)
 ```
-
-## Requirements
-
-- [Claude Code](https://claude.ai/code) or [Cursor](https://cursor.com) installed and authenticated
-- Node.js 18+
-- A git repository
 
 ## Optional: Browser Testing
 
@@ -114,7 +121,7 @@ The `manual-tester` agent walks through user stories in a real browser using Cla
 1. Install the **[Claude in Chrome extension](https://chromewebstore.google.com/detail/claude-in-chrome)** in Chrome or Edge (v1.0.36+)
 2. Launch Claude Code with Chrome integration enabled: `claude --chrome`
 
-The pipeline works without this — the `manual-tester` is skipped if the extension is not available. All other verification (QA, security, accessibility) runs regardless.
+The pipeline works without this — the `manual-tester` is skipped if the extension is not available. All other verification (QA, security) runs regardless.
 
 ## Contributing
 
