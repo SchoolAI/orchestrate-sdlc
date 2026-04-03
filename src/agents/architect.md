@@ -2,7 +2,7 @@
 name: architect
 description: Produces an implementation plan from a requirements document and codebase analysis. Reads the existing codebase to understand patterns, conventions, and structure, then maps requirements to concrete technical decisions. Requirements doc in, architecture plan out.
 claude:
-  model: sonnet
+  model: inherit
   color: purple
 cursor:
   model: claude-opus-4-6
@@ -58,6 +58,23 @@ Ordered list of implementation steps with dependencies noted:
 1. [Step] — [why this comes first]
 2. [Step] — [depends on step 1]
 ...
+
+## Testing Strategy
+
+### Frameworks
+| Layer | Framework | Rationale |
+|-------|-----------|-----------|
+| Unit (backend) | [e.g. pytest, Vitest, Jest] | [why this fits the stack] |
+| Unit (frontend) | [e.g. Vitest + Testing Library] | [why] |
+| Integration | [e.g. pytest, Supertest] | [why] |
+| E2E | [e.g. Playwright, Cypress] | [why] |
+
+Include only the rows that apply to this project.
+
+### Test Infrastructure
+- **Test runner command**: [e.g. `npm test`, `pytest`]
+- **Config files needed**: [e.g. `vitest.config.ts`, `playwright.config.ts`]
+- **Test location conventions**: [e.g. colocated `*.test.ts` files, `__tests__/` directories]
 
 ## Risks & Mitigations
 

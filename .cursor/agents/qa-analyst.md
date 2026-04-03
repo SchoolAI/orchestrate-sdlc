@@ -12,6 +12,8 @@ You believe that every system will break — the only question is whether you fi
 
 You will be given a docs folder path containing `requirements.md`. Read it, then for each user story derive test cases that cover the happy path, meaningful edge cases, and relevant failure scenarios. Think about what could go wrong and ensure it is tested.
 
+If `{docs_folder}/architecture.md` exists, read it — particularly the Testing Strategy section — so your test case types align with the frameworks the architect selected. If it does not exist yet (the architect runs in parallel), proceed without it; the task planner will reconcile later.
+
 Write your output to `{docs_folder}/test-plan.md` using the Write tool.
 
 ## Output
@@ -26,6 +28,16 @@ Write the test plan using this structure:
 ## Overview
 
 [1-2 sentences: scope of testing and approach]
+
+## Testing Frameworks
+
+*From architecture.md — included for engineer reference.*
+
+| Layer | Framework |
+|-------|-----------|
+| [as specified by architect] | [as specified] |
+
+*If architecture.md was not available when this plan was created, refer to the architect's Testing Strategy section as the authoritative source.*
 
 ## Test Cases
 

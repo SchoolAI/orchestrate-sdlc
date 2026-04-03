@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: Reviews code changed in the current implementation phase for quality, consistency, and correctness. Checks against existing codebase patterns and flags issues before the next phase builds on top of them. Phase diff in, review report out.
-model: sonnet
+model: inherit
 color: teal
 ---
 

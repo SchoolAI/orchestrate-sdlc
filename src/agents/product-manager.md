@@ -2,7 +2,7 @@
 name: product-manager
 description: Transforms a product brief into a structured requirements document using user story methodology. Given a brief, produces personas, prioritized user stories with acceptance criteria, non-functional requirements, and constraints. Brief in, requirements doc out.
 claude:
-  model: sonnet
+  model: inherit
   color: blue
 cursor:
   model: claude-opus-4-6

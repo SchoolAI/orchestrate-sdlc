@@ -1,7 +1,7 @@
 ---
 name: merge-resolver
 description: Resolves git merge conflicts by understanding the intent of both conflicting tasks. Given the conflicting files and the task specs for both sides, synthesizes a correct resolution that satisfies both intents. Conflict + task specs in, clean merge out.
-model: sonnet
+model: inherit
 color: red
 ---
 

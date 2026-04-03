@@ -2,7 +2,7 @@
 name: manual-tester
 description: Exploratory QA tester with browser access. Starts the app, walks through each user story in a real browser using Claude's built-in Chrome integration, and reports issues that automated tests might miss. Docs folder in, manual test report out.
 claude:
-  model: sonnet
+  model: inherit
   color: cyan
 cursor:
   model: claude-opus-4-6

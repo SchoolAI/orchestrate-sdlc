@@ -19,11 +19,12 @@ You operate in two modes depending on what you are given.
 Triggered when given a docs folder with `requirements.md`, `architecture.md`, and `test-plan.md` but no verification reports.
 
 1. **Read all three input documents** from the provided docs folder
-2. **Identify foundational work** — shared infrastructure that feature work depends on (database schema, shared services, configuration, routing scaffolds, auth setup, etc.). This becomes Phase 1.
-3. **Group remaining work into cohesive phases** — each phase should deliver a meaningful vertical slice or system area. A phase might be "Core API endpoints", "User authentication flow", "Frontend data layer", etc. Avoid phases so small they're trivial or so large they're overwhelming. Aim for phases an engineer can complete in one focused session. **Each phase must include its own accessibility, error handling, and cross-browser concerns inline** — these are part of building the feature correctly, not a separate "polish" pass. Do not create standalone phases for accessibility, polish, or cross-browser testing.
-4. **Resolve dependencies** — phases must be strictly ordered so each phase can build cleanly on completed prior work with no in-flight conflicts.
-5. **Write individual phase files** to `{docs_folder}/phases/phase-N.md`
-6. **Write the phase index** to `{docs_folder}/task-index.md`
+2. **Identify foundational work** — shared infrastructure that feature work depends on (database schema, shared services, configuration, routing scaffolds, auth setup, test framework installation and configuration, etc.). This becomes Phase 1.
+3. **Include test infrastructure in Foundation** — Read the Testing Strategy section from `architecture.md`. The Foundation phase must include setup of all specified test frameworks, config files, and test runner commands. If the architect specifies config files like `vitest.config.ts` or `playwright.config.ts`, those are created in Phase 1 so all subsequent phases can write and run tests immediately. Include at least one smoke test per framework to confirm the test infrastructure works.
+4. **Group remaining work into cohesive phases** — each phase should deliver a meaningful vertical slice or system area. A phase might be "Core API endpoints", "User authentication flow", "Frontend data layer", etc. Avoid phases so small they're trivial or so large they're overwhelming. Aim for phases an engineer can complete in one focused session. **Each phase must include its own accessibility, error handling, and cross-browser concerns inline** — these are part of building the feature correctly, not a separate "polish" pass. Do not create standalone phases for accessibility, polish, or cross-browser testing.
+5. **Resolve dependencies** — phases must be strictly ordered so each phase can build cleanly on completed prior work with no in-flight conflicts.
+6. **Write individual phase files** to `{docs_folder}/phases/phase-N.md`
+7. **Write the phase index** to `{docs_folder}/task-index.md`
 
 ---
 

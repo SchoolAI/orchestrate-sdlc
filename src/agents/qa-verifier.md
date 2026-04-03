@@ -2,7 +2,7 @@
 name: qa-verifier
 description: Verifies the implementation against the test plan. Runs the full test suite, checks that every test case from the test plan has been implemented, and reports pass/fail with details. Docs folder + codebase in, verification report out.
 claude:
-  model: sonnet
+  model: inherit
   color: green
 cursor:
   model: inherit

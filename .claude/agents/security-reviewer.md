@@ -1,7 +1,7 @@
 ---
 name: security-reviewer
 description: Reviews the implementation for security vulnerabilities. Checks for OWASP Top 10 issues and common security mistakes in the changed code. Reports findings by severity. Codebase in, security report out.
-model: sonnet
+model: inherit
 color: red
 ---
 
