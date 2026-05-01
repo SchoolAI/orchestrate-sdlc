@@ -227,9 +227,8 @@ const CURSOR_HOOK_CONFIG = {
   hooks: {
     beforeShellExecution: [
       {
-        command: 'hooks/check-memory.sh',
-        timeout: 5000,
-        enabled: true
+        command: './hooks/check-memory.sh',
+        timeout: 5
       }
     ]
   }

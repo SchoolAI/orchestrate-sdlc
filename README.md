@@ -32,20 +32,28 @@ To pull the latest version later:
 
 ## Install — Cursor
 
-Cursor doesn't expose a per-individual "add a remote marketplace by URL" command, so install is a one-time clone + symlink into Cursor's local plugins folder:
+Cursor doesn't expose a per-individual "add a remote marketplace by URL" command, so install is a clone + copy into Cursor's local plugins folder:
 
 ```bash
 git clone https://github.com/SchoolAI/orchestrate-sdlc.git ~/code/orchestrate-sdlc
-ln -s ~/code/orchestrate-sdlc/.cursor ~/.cursor/plugins/local/orchestrate-sdlc
+cp -R ~/code/orchestrate-sdlc/.cursor ~/.cursor/plugins/local/orchestrate-sdlc
 ```
 
-Restart Cursor. The clone path (`~/code/orchestrate-sdlc`) is just a suggestion — anywhere you keep repos works. The symlink target under `~/.cursor/plugins/local/` is what Cursor actually loads.
+Then **fully quit Cursor and relaunch** (Reload Window may not be enough on first install).
 
-To pull the latest version later:
+The clone path (`~/code/orchestrate-sdlc`) is just a suggestion — anywhere you keep repos works.
+
+> **Why copy instead of symlink?** Cursor's own docs suggest symlinking, but there's a [known bug](https://github.com/cursor/plugins/issues/35) where symlinked plugins in `~/.cursor/plugins/local/` don't load. Copying the directory works reliably.
+
+To update to the latest version later:
 
 ```bash
 cd ~/code/orchestrate-sdlc && git pull
+rm -rf ~/.cursor/plugins/local/orchestrate-sdlc
+cp -R ~/code/orchestrate-sdlc/.cursor ~/.cursor/plugins/local/orchestrate-sdlc
 ```
+
+Then restart Cursor.
 
 ## Usage
 
@@ -154,10 +162,11 @@ For Claude Code, point its marketplace at your working copy:
 
 After making changes, run `npm run build` and then `/plugin marketplace update orchestrate-sdlc` followed by `/reload-plugins`.
 
-For Cursor, symlink your working copy's `.cursor/` directory into `~/.cursor/plugins/local/`:
+For Cursor, copy your working copy's `.cursor/` directory into `~/.cursor/plugins/local/` (symlinks don't load — see [cursor/plugins#35](https://github.com/cursor/plugins/issues/35)):
 
 ```bash
-ln -s "$(pwd)/.cursor" ~/.cursor/plugins/local/orchestrate-sdlc
+rm -rf ~/.cursor/plugins/local/orchestrate-sdlc
+cp -R "$(pwd)/.cursor" ~/.cursor/plugins/local/orchestrate-sdlc
 ```
 
-Restart Cursor (or Developer: Reload Window) after each `npm run build`.
+Re-run those two commands after each `npm run build`, then restart Cursor.
